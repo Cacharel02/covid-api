@@ -102,4 +102,13 @@ public class CenterService {
     public List<Reservation> getReservations(Long centerId){
         return getById(centerId).getReservations();
     }
+
+    public Center deleteReservation(Long centerId, Reservation reservation){
+        return centerRepository.findById(centerId).map(center -> {
+            List<Reservation> liste = center.getReservations();
+            liste.remove(reservation);
+            center.setReservations(liste);
+            return centerRepository.save(center);
+        }).orElseThrow();
+    }
 }

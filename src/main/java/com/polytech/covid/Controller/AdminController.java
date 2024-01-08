@@ -109,4 +109,16 @@ public class AdminController {
             return "La personne n'a pas de réservation";
         }
     }
+
+    @PutMapping("/centers/{center}/patients/{patient}/confirm")
+    public String confirm(@PathVariable("center") Long centerId, @PathVariable("patient") Long patientId){//valider une vaccination
+        if (reservationService.hasbooked(centerId, personneService.findById(patientId).getName())) {
+            personneService.setVaccination(patientId);
+            centerService.deleteReservation(centerId, reservationService.findReservationByName(personneService.findById(patientId).getName()));
+            reservationService.deleteById(reservationService.findReservationByName(personneService.findById(patientId).getName()).getId());
+            return "Vaccination confirmée";
+        }else{
+            return "La personne n'a pas de réservation";
+        }
+    }
 }

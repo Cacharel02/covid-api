@@ -50,5 +50,9 @@ public class ReservationService {
         }
         return hasbooked;
     }
+
+    public void deleteById(Long id){
+        reservationRepository.deleteById(id);
+    }
     
 }

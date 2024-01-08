@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.polytech.covid.Model.Personne;
 
 @Repository
-public interface PersonneRepository extends JpaRepository<Personne, Integer>{
+public interface PersonneRepository extends JpaRepository<Personne, Long>{
     Personne findByName(String name);
 }

@@ -20,4 +20,19 @@ public class PersonneService {
         return personneRepository.findByName(name);
     }
 
+    public Boolean isVaccinated(Personne personne){
+        return personne.getIsVaccinated();
+    }
+
+    public Personne findById(Long id){
+        return personneRepository.findById(id).get();
+    }
+
+    public Personne setVaccination(Long id){
+        return personneRepository.findById(id).map(personne -> {
+            personne.setIsVaccinated(true);
+            return personneRepository.save(personne);
+        }).orElseThrow();
+    }
+
 }

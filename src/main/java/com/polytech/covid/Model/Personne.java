@@ -32,4 +32,6 @@ public class Personne {
     @Column(name = "telephone")
     private String telephone;
 
+    private Boolean isVaccinated;
+
 }
