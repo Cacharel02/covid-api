@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,13 +42,22 @@ public class PublicController {
         return villeService.getCenters(id);
     }
 
-    @PostMapping("/book")
+    @PostMapping("/books")
     public Reservation book(@RequestParam(name = "center_id") Long id, @RequestBody Personne personne){
-        Center centre = centerService.getById(id);
-        Reservation reservation = new Reservation();
-        reservation.setCenter(centre);
-        personneService.create(personne);
-        reservation.setPersonne(personne);
-        return reservationService.create(reservation);
+        if(!reservationService.anyReservation(personne)){
+            Reservation reservation = new Reservation();
+            personneService.create(personne);
+            reservation.setPersonne(personne);
+            reservationService.create(reservation);
+            centerService.addReservation(id, reservation);
+            return reservationService.create(reservation);
+        }else{
+            return null;
+        }
+    }
+
+    @PutMapping("/cancel")
+    public void cancel(@RequestParam(name = "patientId") Long id){
+        reservationService.deleteByPatientId(id);
     }
 }

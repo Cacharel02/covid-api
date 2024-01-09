@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.polytech.covid.Model.Admin;
 import com.polytech.covid.Model.Center;
 import com.polytech.covid.Model.Doctor;
-import com.polytech.covid.Model.Personne;
 import com.polytech.covid.Model.Reservation;
 import com.polytech.covid.Service.CenterService;
 import com.polytech.covid.Service.PersonneService;
@@ -96,26 +95,19 @@ public class AdminController {
         return centerService.getReservations(centerId);
     }
 
-    @GetMapping("/patients")
-    public Personne getPersonne(@RequestParam("name") String name){
-        return personneService.findByName(name);
-    }
-
-    @GetMapping("/centers/{center}/hasbooked")
-    public String hasbooked(@PathVariable("center") Long centerId, @RequestParam("name") String name){
-        if(reservationService.hasbooked(centerId, name)){
-            return "La personne a une réservation";
-        }else{
-            return "La personne n'a pas de réservation";
-        }
+    //recherche d'une personne à son arrivée
+    @GetMapping("/centers/{center}/books/find")
+    public Reservation getReservationByName(@PathVariable("center") Long centerId, @RequestParam(name = "name") String name){
+        return reservationService.findReservationByName(centerId, name);
     }
 
     @PutMapping("/centers/{center}/patients/{patient}/confirm")
-    public String confirm(@PathVariable("center") Long centerId, @PathVariable("patient") Long patientId){//valider une vaccination
+    public String confirm(@PathVariable("center") Long centerId, @PathVariable("patient") Long patientId) throws Exception{//valider une vaccination
         if (reservationService.hasbooked(centerId, personneService.findById(patientId).getName())) {
             personneService.setVaccination(patientId);
-            centerService.deleteReservation(centerId, reservationService.findReservationByName(personneService.findById(patientId).getName()));
-            reservationService.deleteById(reservationService.findReservationByName(personneService.findById(patientId).getName()).getId());
+            Reservation reservation = reservationService.findReservationByName(centerId, personneService.findById(patientId).getName());
+            centerService.deleteReservation(reservation);
+            reservationService.deleteById(reservationService.findReservationByName(centerId, personneService.findById(patientId).getName()).getId());
             return "Vaccination confirmée";
         }else{
             return "La personne n'a pas de réservation";

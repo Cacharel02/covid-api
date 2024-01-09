@@ -40,7 +40,7 @@ public class Center {
     @OneToMany
     private List<Doctor> doctors;
 
-    @OneToMany(mappedBy = "center")
+    @OneToMany
     private List<Reservation> reservations;
     
 }

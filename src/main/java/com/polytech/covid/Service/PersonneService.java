@@ -35,4 +35,8 @@ public class PersonneService {
         }).orElseThrow();
     }
 
+    public boolean equals(Personne p, Personne q){
+        return p.getName().getBytes() == q.getName().getBytes();
+    }
+
 }

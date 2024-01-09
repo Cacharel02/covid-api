@@ -103,8 +103,26 @@ public class CenterService {
         return getById(centerId).getReservations();
     }
 
-    public Center deleteReservation(Long centerId, Reservation reservation){
+    public Center addReservation(Long centerId, Reservation reservation){
         return centerRepository.findById(centerId).map(center -> {
+            List<Reservation> liste = center.getReservations();
+            liste.add(reservation);
+            center.setReservations(liste);
+            return centerRepository.save(center);
+        }).orElseThrow();
+    }
+
+    public Center deleteReservation(Reservation reservation){
+        Center center0 = centerRepository.findAll().get(0);
+        for(Center c : centerRepository.findAll()){
+            if(c.getReservations().contains(reservation)){
+                center0 = c;
+                break;
+            }else{
+                continue;
+            }
+        }
+        return centerRepository.findById(center0.getId()).map(center -> {
             List<Reservation> liste = center.getReservations();
             liste.remove(reservation);
             center.setReservations(liste);
