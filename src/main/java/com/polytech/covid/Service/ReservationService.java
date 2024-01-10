@@ -3,6 +3,8 @@ package com.polytech.covid.Service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
+import com.polytech.covid.Exceptions.NoExistingAccount;
+import com.polytech.covid.Exceptions.NoExistingBook;
 import com.polytech.covid.Model.Center;
 import com.polytech.covid.Model.Personne;
 import com.polytech.covid.Model.Reservation;
@@ -35,19 +37,23 @@ public class ReservationService {
         return create(reservation);
     }
 
-    public Reservation findReservationByName(Long centerId, String name) {
+    public Reservation findReservationByName(Long centerId, String name) throws NoExistingBook, NoExistingAccount {
         if(hasbooked(centerId, name)){
             return reservationRepository.findByPersonneName(name);
         }else{
-            return null;
+            throw new NoExistingBook("Madame/Monsieur "+name+" n'a pas de réservation");
         }
     }
 
-    public boolean hasbooked(Long centerId, String name){
+    public boolean hasbooked(Long centerId, String name) throws NoExistingAccount{
         Personne personne = personneService.findByName(name);
-        //créer une exception dans le cas ou ça retourne null
-        List<Reservation> reservations = centerService.reservations(centerId);
         Boolean hasbooked = false;
+        // if(personne == null){
+        //     throw new NoExistingAccount("Madame/Monsieur "+name+" n'a pas de compte");
+        // }else{
+            
+        // }
+        List<Reservation> reservations = centerService.reservations(centerId);
         for (Reservation reservation : reservations) {
             if(reservation.getPersonne().getId() == personne.getId()){
                 hasbooked = true;
@@ -57,6 +63,7 @@ public class ReservationService {
                 continue;
             }
         }
+        
         return hasbooked;
     }
 
@@ -64,7 +71,7 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public boolean anyReservation(Personne personne){
+    public boolean anyReservation(Personne personne) throws NoExistingAccount{
         Boolean exist = false;
         for(Center center : centerService.findAll()){
             if(hasbooked(center.getId(), personne.getName())){

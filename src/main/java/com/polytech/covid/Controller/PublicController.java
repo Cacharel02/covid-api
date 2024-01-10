@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.polytech.covid.Exceptions.ExistingBook;
+import com.polytech.covid.Exceptions.NoExistingAccount;
+import com.polytech.covid.Exceptions.NoExistingBook;
 import com.polytech.covid.Model.Center;
 import com.polytech.covid.Model.Personne;
 import com.polytech.covid.Service.GlobalService;
@@ -33,11 +37,21 @@ public class PublicController {
 
     @PostMapping("/books")
     public void book(@RequestParam(name = "center_id") Long id, @RequestBody Personne personne){
-        globalService.book(id, personne);
+        try {
+            globalService.book(id, personne);
+        } catch (ExistingBook e) {
+            e.printStackTrace();
+        } catch(NoExistingAccount e){
+            e.printStackTrace();
+        }
     }
 
     @PutMapping("/cancel")
     public void cancel(@RequestParam(name = "bookId") Long id){
-        globalService.cancel(id);
+        try {
+            globalService.cancel(id);
+        } catch (NoExistingBook e) {
+            e.printStackTrace();
+        }
     }
 }

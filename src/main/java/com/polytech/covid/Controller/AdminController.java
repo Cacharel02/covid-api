@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.polytech.covid.Exceptions.NoExistingAccount;
+import com.polytech.covid.Exceptions.NoExistingBook;
 import com.polytech.covid.Model.Admin;
 import com.polytech.covid.Model.Center;
 import com.polytech.covid.Model.Doctor;
@@ -98,7 +100,12 @@ public class AdminController {
     //recherche d'une personne à son arrivée
     @GetMapping("/centers/{center}/books/find")
     public Reservation getReservationByName(@PathVariable("center") Long centerId, @RequestParam(name = "name") String name){
-        return reservationService.findReservationByName(centerId, name);
+        try {
+            return reservationService.findReservationByName(centerId, name);
+        } catch (NoExistingBook | NoExistingAccount e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @PutMapping("/centers/{center}/patients/{patient}/confirm")
