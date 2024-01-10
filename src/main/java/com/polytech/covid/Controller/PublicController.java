@@ -11,11 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.polytech.covid.Model.Center;
 import com.polytech.covid.Model.Personne;
-import com.polytech.covid.Model.Reservation;
-import com.polytech.covid.Service.CenterService;
-import com.polytech.covid.Service.PersonneService;
-import com.polytech.covid.Service.ReservationService;
-import com.polytech.covid.Service.VilleService;
+import com.polytech.covid.Service.GlobalService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,41 +19,25 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/public")
 public class PublicController {
-    
-    private final CenterService centerService;
 
-    private final PersonneService personneService;
-
-    private final ReservationService reservationService;
-
-    private final VilleService villeService;
-
+    private final GlobalService globalService;
     @GetMapping("/centers")
     public List<Center> centers(){
-        return centerService.getAllCenters();
+        return globalService.centers();
     }
 
     @GetMapping("/{ville}/centers")
     public List<Center> centersByTown(@PathVariable("ville") Long id){
-        return villeService.getCenters(id);
+        return globalService.centersByTown(id);
     }
 
     @PostMapping("/books")
-    public Reservation book(@RequestParam(name = "center_id") Long id, @RequestBody Personne personne){
-        if(!reservationService.anyReservation(personne)){
-            Reservation reservation = new Reservation();
-            personneService.create(personne);
-            reservation.setPersonne(personne);
-            reservationService.create(reservation);
-            centerService.addReservation(id, reservation);
-            return reservationService.create(reservation);
-        }else{
-            return null;
-        }
+    public void book(@RequestParam(name = "center_id") Long id, @RequestBody Personne personne){
+        globalService.book(id, personne);
     }
 
     @PutMapping("/cancel")
-    public void cancel(@RequestParam(name = "patientId") Long id){
-        reservationService.deleteByPatientId(id);
+    public void cancel(@RequestParam(name = "bookId") Long id){
+        globalService.cancel(id);
     }
 }

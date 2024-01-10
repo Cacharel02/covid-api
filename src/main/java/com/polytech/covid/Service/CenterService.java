@@ -32,29 +32,24 @@ public class CenterService {
         centerRepository.save(centre);
     }
 
-    public List<Center> getAllCenters(){
+    public List<Center> findAll(){
         return centerRepository.findAll();
     }
 
-    public List<Center> getCentersByTown(Long id){
-        return villeService.getCenters(id);
+    public List<Center> getCentersByTown(Long villeId){
+        return villeService.getCenters(villeId);
     }
 
-    public Center getById(Long id){
+    public Center findById(Long id){
         return centerRepository.findById(id).get();
     }
 
-    public Admin getAdmin(Center centre){
-        return centre.getAdmin();
+    public Admin getAdmin(Long centerId){
+        return findById(centerId).getAdmin();
     }
 
-    public Admin getAdminByCenterId(Long id){
-        return getAdmin(getById(id));
-    }
-
-    public List<Reservation> reservations(Long id){
-        //return reservationRepository.findAllByCenterId(centre.getId());
-        return getById(id).getReservations();
+    public List<Reservation> reservations(Long centerId){
+        return findById(centerId).getReservations();
     }
 
     public Center update(Long id, Center newCenter){
@@ -71,12 +66,12 @@ public class CenterService {
     }
 
     public Admin updateAdmin(Long id, Admin newAdmin){
-        Admin admin = getAdminByCenterId(id);
+        Admin admin = getAdmin(id);
         return adminService.update(admin.getId(), newAdmin);
     }
 
     public List<Doctor> getDoctors(Long centerId){
-        return getById(centerId).getDoctors();
+        return findById(centerId).getDoctors();
     }
 
     public Center addDoctor(Long centerId, Doctor doctor){
@@ -93,14 +88,10 @@ public class CenterService {
         return centerRepository.findById(centerId).map(center -> {
             List<Doctor> doctors = center.getDoctors();
             doctors.remove(doctorService.getDoctorById(doctorId));
-            doctorService.delete(doctorId);
             center.setDoctors(doctors);
+            doctorService.delete(doctorId);
             return centerRepository.save(center);
         }).orElseThrow();
-    }
-
-    public List<Reservation> getReservations(Long centerId){
-        return getById(centerId).getReservations();
     }
 
     public Center addReservation(Long centerId, Reservation reservation){
@@ -112,17 +103,22 @@ public class CenterService {
         }).orElseThrow();
     }
 
-    public Center deleteReservation(Reservation reservation){
-        Center center0 = centerRepository.findAll().get(0);
-        for(Center c : centerRepository.findAll()){
-            if(c.getReservations().contains(reservation)){
-                center0 = c;
+    public Center findByReservation(Reservation reservation){
+        Center c = null;
+        for(Center center : centerRepository.findAll()){
+            if(center.getReservations().contains(reservation)){
+                c = center;
                 break;
             }else{
                 continue;
             }
         }
-        return centerRepository.findById(center0.getId()).map(center -> {
+        return c;
+        //retourner une exception si la réservation existe pas
+    }
+
+    public Center deleteReservation(Reservation reservation){
+        return centerRepository.findById(findByReservation(reservation).getId()).map(center -> {
             List<Reservation> liste = center.getReservations();
             liste.remove(reservation);
             center.setReservations(liste);

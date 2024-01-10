@@ -24,7 +24,12 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
 
+    public Reservation findById(Long bookId){
+        return reservationRepository.findById(bookId).get();
+    }
+
     public Reservation createWithPerson(Personne personne){
+        personneService.create(personne);
         Reservation reservation = new Reservation();
         reservation.setPersonne(personne);
         return create(reservation);
@@ -32,13 +37,7 @@ public class ReservationService {
 
     public Reservation findReservationByName(Long centerId, String name) {
         if(hasbooked(centerId, name)){
-            List<Reservation> reservations = centerService.getReservations(centerId);
-            Boolean eq = reservations.contains(reservationRepository.findByPersonneName(name));
-            if(eq){
-                return reservationRepository.findByPersonneName(name);
-            }else{
-                return null;
-            }
+            return reservationRepository.findByPersonneName(name);
         }else{
             return null;
         }
@@ -46,7 +45,8 @@ public class ReservationService {
 
     public boolean hasbooked(Long centerId, String name){
         Personne personne = personneService.findByName(name);
-        List<Reservation> reservations = centerService.getReservations(centerId);
+        //créer une exception dans le cas ou ça retourne null
+        List<Reservation> reservations = centerService.reservations(centerId);
         Boolean hasbooked = false;
         for (Reservation reservation : reservations) {
             if(reservation.getPersonne().getId() == personne.getId()){
@@ -66,7 +66,7 @@ public class ReservationService {
 
     public boolean anyReservation(Personne personne){
         Boolean exist = false;
-        for(Center center : centerService.getAllCenters()){
+        for(Center center : centerService.findAll()){
             if(hasbooked(center.getId(), personne.getName())){
                 exist = true;
                 break;
@@ -77,10 +77,4 @@ public class ReservationService {
         return exist;
     }
     
-    public void deleteByPatientId(Long patientId){
-        Personne patient = personneService.findById(patientId);
-        Reservation reservation = reservationRepository.findByPersonneName(patient.getName());
-        centerService.deleteReservation(reservation);
-        deleteById(reservation.getId());
-    }
 }

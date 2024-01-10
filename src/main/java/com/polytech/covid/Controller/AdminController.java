@@ -16,7 +16,7 @@ import com.polytech.covid.Model.Center;
 import com.polytech.covid.Model.Doctor;
 import com.polytech.covid.Model.Reservation;
 import com.polytech.covid.Service.CenterService;
-import com.polytech.covid.Service.PersonneService;
+import com.polytech.covid.Service.GlobalService;
 import com.polytech.covid.Service.ReservationService;
 import com.polytech.covid.Service.VilleService;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +30,9 @@ public class AdminController {
 
     private final VilleService villeService;
 
-    private final PersonneService personneService;
-
     private final ReservationService reservationService;
+
+    private final GlobalService globalService;
 
     @PostMapping("/centers/create")
     public void create(@RequestBody Center centre){
@@ -41,7 +41,7 @@ public class AdminController {
 
     @GetMapping("/centers")
     public List<Center> centers(){
-        return centerService.getAllCenters();
+        return centerService.findAll();
     }
 
     @GetMapping("/{ville}/centers")
@@ -65,7 +65,7 @@ public class AdminController {
     //admin d'un centre donné
     @GetMapping("/centers/{center}/admin")
     public Admin getAdmin(@PathVariable("center") Long id){
-        return centerService.getAdminByCenterId(id);
+        return centerService.getAdmin(id);
     }
 
     @PutMapping("/centers/{center}/admin")
@@ -92,7 +92,7 @@ public class AdminController {
     //gestion des réservations
     @GetMapping("/centers/{center}/books")
     public List<Reservation> getReservation(@PathVariable("center") Long centerId){
-        return centerService.getReservations(centerId);
+        return centerService.reservations(centerId);
     }
 
     //recherche d'une personne à son arrivée
@@ -102,15 +102,7 @@ public class AdminController {
     }
 
     @PutMapping("/centers/{center}/patients/{patient}/confirm")
-    public String confirm(@PathVariable("center") Long centerId, @PathVariable("patient") Long patientId) throws Exception{//valider une vaccination
-        if (reservationService.hasbooked(centerId, personneService.findById(patientId).getName())) {
-            personneService.setVaccination(patientId);
-            Reservation reservation = reservationService.findReservationByName(centerId, personneService.findById(patientId).getName());
-            centerService.deleteReservation(reservation);
-            reservationService.deleteById(reservationService.findReservationByName(centerId, personneService.findById(patientId).getName()).getId());
-            return "Vaccination confirmée";
-        }else{
-            return "La personne n'a pas de réservation";
-        }
+    public void confirm(@PathVariable("center") Long centerId, @PathVariable("patient") Long patientId) throws Exception{//valider une vaccination
+        globalService.confirm(centerId, patientId);
     }
 }
