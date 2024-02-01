@@ -15,6 +15,7 @@ import com.polytech.covid.Exceptions.NoExistingAccount;
 import com.polytech.covid.Exceptions.NoExistingBook;
 import com.polytech.covid.Model.Center;
 import com.polytech.covid.Model.Personne;
+import com.polytech.covid.Model.Ville;
 import com.polytech.covid.Service.GlobalService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class PublicController {
 
     private final GlobalService globalService;
+
     @GetMapping("/centers")
     public List<Center> centers(){
         return globalService.centers();
@@ -53,5 +55,16 @@ public class PublicController {
         } catch (NoExistingBook e) {
             e.printStackTrace();
         }
+    }
+
+    @GetMapping("/patients/{id}")
+    public Personne getPatient(@PathVariable("id") Long id){
+        //On vérifie que la personne est identifiée
+        return globalService.getPatientById(id);
+    }
+
+    @GetMapping("/villes/{name}")
+    public Ville getVilleByName(@PathVariable("name") String name){
+        return globalService.findByName(name);
     }
 }

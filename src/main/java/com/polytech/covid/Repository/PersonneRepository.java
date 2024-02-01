@@ -8,4 +8,5 @@ import com.polytech.covid.Model.Personne;
 @Repository
 public interface PersonneRepository extends JpaRepository<Personne, Long>{
     Personne findByName(String name);
+    Personne findByMail(String mail);
 }

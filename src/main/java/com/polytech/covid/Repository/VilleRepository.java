@@ -7,5 +7,5 @@ import com.polytech.covid.Model.Ville;
 
 @Repository
 public interface VilleRepository extends JpaRepository<Ville, Long>{
-    
+    Ville findByName(String name);
 }

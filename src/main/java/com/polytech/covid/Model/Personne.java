@@ -32,6 +32,11 @@ public class Personne {
     @Column(name = "telephone")
     private String telephone;
 
+    @Column(name = "password")
+    private String password;
+
     private Boolean isVaccinated;
+
+    private Boolean isAuth;
 
 }

@@ -39,4 +39,15 @@ public class PersonneService {
         return p.getName().getBytes() == q.getName().getBytes();
     }
 
+    public Personne login(String email, String password){
+        Personne personne = personneRepository.findByMail(email);
+        //Avant vérifier si la personne n'est pas déjà connectée
+        if(personne.getPassword()==password){
+            personne.setIsAuth(true);
+            return personne;
+        }else{
+            return null;
+        }
+    }
+
 }

@@ -31,4 +31,8 @@ public class VilleService {
     public Ville getVilleById(Long id){
         return villeRepository.findById(id).get();
     }
+
+    public Ville getVilleByName(String name){
+        return villeRepository.findByName(name);
+    }
 }

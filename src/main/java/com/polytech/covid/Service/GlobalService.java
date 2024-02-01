@@ -12,6 +12,7 @@ import com.polytech.covid.Exceptions.NoExistingBook;
 import com.polytech.covid.Model.Center;
 import com.polytech.covid.Model.Personne;
 import com.polytech.covid.Model.Reservation;
+import com.polytech.covid.Model.Ville;
 
 import lombok.RequiredArgsConstructor;
 
@@ -63,5 +64,13 @@ public class GlobalService {
         }else{
 
         }
+    }
+
+    public Personne getPatientById(Long id) {
+        return personneService.findById(id);
+    }
+
+    public Ville findByName(String name){
+        return villeService.getVilleByName(name);
     }
 }
