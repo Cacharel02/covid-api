@@ -42,5 +42,11 @@ public class Center {
 
     @OneToMany
     private List<Reservation> reservations;
+
+    @Column(name = "adresse")
+    private String adresse;
+
+    @Column(name = "code")
+    private int code;
     
 }
