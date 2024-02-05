@@ -1,6 +1,7 @@
 package com.polytech.covid.Service;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -12,6 +13,7 @@ import com.polytech.covid.Exceptions.NoExistingBook;
 import com.polytech.covid.Model.Center;
 import com.polytech.covid.Model.Personne;
 import com.polytech.covid.Model.Reservation;
+import com.polytech.covid.Model.ReservationForm;
 import com.polytech.covid.Model.Ville;
 
 import lombok.RequiredArgsConstructor;
@@ -36,10 +38,14 @@ public class GlobalService {
         return villeService.getCenters(villeId);
     }
 
-    public void book(Long centerId, Personne personne) throws ExistingBook, NoExistingAccount{
+    public void book(Long centerId, ReservationForm reservationForm) throws ExistingBook, NoExistingAccount{
+        Personne personne = reservationForm.getPersonne();
+        Reservation reservation = new Reservation();
+        reservation.setDate(LocalDateTime.parse(reservationForm.getDate()));
         if(!reservationService.anyReservation(personne)){
-            Reservation reservation = reservationService.createWithPerson(personne);
-            centerService.addReservation(centerId, reservation);
+            Reservation res = reservationService.createWithPerson(personne, reservation);
+            // Reservation res = reservationService.create(reservation);
+            centerService.addReservation(centerId, res);
         }else{
             throw new ExistingBook("Madame/Monsieur "+personne.getName()+" a déjà une réservation");
         }

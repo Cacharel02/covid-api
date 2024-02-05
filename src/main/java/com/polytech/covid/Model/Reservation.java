@@ -1,5 +1,8 @@
 package com.polytech.covid.Model;
 
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,5 +27,8 @@ public class Reservation {
     @OneToOne
     @JoinColumn(name = "personne_id")
     private Personne personne;
+
+    @Column
+    private LocalDateTime date;
 
 }

@@ -30,9 +30,8 @@ public class ReservationService {
         return reservationRepository.findById(bookId).get();
     }
 
-    public Reservation createWithPerson(Personne personne){
+    public Reservation createWithPerson(Personne personne, Reservation reservation){
         personneService.create(personne);
-        Reservation reservation = new Reservation();
         reservation.setPersonne(personne);
         return create(reservation);
     }
