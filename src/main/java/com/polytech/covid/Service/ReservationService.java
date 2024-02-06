@@ -47,11 +47,9 @@ public class ReservationService {
     public boolean hasbooked(Long centerId, String name) throws NoExistingAccount{
         Personne personne = personneService.findByName(name);
         Boolean hasbooked = false;
-        // if(personne == null){
-        //     throw new NoExistingAccount("Madame/Monsieur "+name+" n'a pas de compte");
-        // }else{
-            
-        // }
+        if(personne == null){
+            return hasbooked;
+        }
         List<Reservation> reservations = centerService.reservations(centerId);
         for (Reservation reservation : reservations) {
             if(reservation.getPersonne().getId() == personne.getId()){

@@ -17,6 +17,7 @@ import com.polytech.covid.Exceptions.NoExistingAccount;
 import com.polytech.covid.Exceptions.NoExistingBook;
 import com.polytech.covid.Model.Center;
 import com.polytech.covid.Model.Personne;
+import com.polytech.covid.Model.Reservation;
 import com.polytech.covid.Model.ReservationForm;
 import com.polytech.covid.Model.Ville;
 import com.polytech.covid.Service.GlobalService;
@@ -42,14 +43,15 @@ public class PublicController {
     }
 
     @PostMapping("/books")
-    public void book(@RequestParam(name = "center_id") Long id, @RequestBody ReservationForm reservation){
+    public Reservation book(@RequestParam(name = "center_id") Long id, @RequestBody ReservationForm reservation){
         try {
-            globalService.book(id, reservation);
+            return globalService.book(id, reservation);
         } catch (ExistingBook e) {
             e.printStackTrace();
         } catch(NoExistingAccount e){
             e.printStackTrace();
         }
+        return null;
     }
 
     @PutMapping("/cancel")

@@ -38,7 +38,7 @@ public class GlobalService {
         return villeService.getCenters(villeId);
     }
 
-    public void book(Long centerId, ReservationForm reservationForm) throws ExistingBook, NoExistingAccount{
+    public Reservation book(Long centerId, ReservationForm reservationForm) throws ExistingBook, NoExistingAccount{
         Personne personne = reservationForm.getPersonne();
         Reservation reservation = new Reservation();
         reservation.setDate(LocalDateTime.parse(reservationForm.getDate()));
@@ -46,6 +46,7 @@ public class GlobalService {
             Reservation res = reservationService.createWithPerson(personne, reservation);
             // Reservation res = reservationService.create(reservation);
             centerService.addReservation(centerId, res);
+            return res;
         }else{
             throw new ExistingBook("Madame/Monsieur "+personne.getName()+" a déjà une réservation");
         }
