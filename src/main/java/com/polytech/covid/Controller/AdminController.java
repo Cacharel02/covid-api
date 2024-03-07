@@ -1,6 +1,9 @@
 package com.polytech.covid.Controller;
 
 import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,11 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.polytech.covid.Exceptions.IncorrectPassword;
 import com.polytech.covid.Exceptions.NoExistingAccount;
 import com.polytech.covid.Exceptions.NoExistingBook;
 import com.polytech.covid.Model.Admin;
 import com.polytech.covid.Model.Center;
 import com.polytech.covid.Model.Doctor;
+import com.polytech.covid.Model.LoginForm;
 import com.polytech.covid.Model.Reservation;
 import com.polytech.covid.Service.CenterService;
 import com.polytech.covid.Service.GlobalService;
@@ -39,6 +44,18 @@ public class AdminController {
     @PostMapping("/centers/create")
     public void create(@RequestBody Center centre){
         centerService.create(centre);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginForm login){
+
+        try {
+            return ResponseEntity.ok().body(globalService.login(login));
+        } catch (NoExistingAccount e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IncorrectPassword e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
     }
 
     @GetMapping("/centers")
@@ -112,4 +129,6 @@ public class AdminController {
     public void confirm(@PathVariable("center") Long centerId, @PathVariable("patient") Long patientId) throws Exception{//valider une vaccination
         globalService.confirm(centerId, patientId);
     }
+
+
 }

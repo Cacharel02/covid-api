@@ -6,4 +6,5 @@ import com.polytech.covid.Model.Doctor;
 
 public interface DoctorRepository extends JpaRepository<Doctor,Long>{
     
+    Doctor findByMail(String mail);
 }

@@ -8,12 +8,18 @@ import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 
 import com.polytech.covid.Exceptions.ExistingBook;
+import com.polytech.covid.Exceptions.IncorrectPassword;
 import com.polytech.covid.Exceptions.NoExistingAccount;
 import com.polytech.covid.Exceptions.NoExistingBook;
+import com.polytech.covid.Model.Admin;
 import com.polytech.covid.Model.Center;
+import com.polytech.covid.Model.Doctor;
+import com.polytech.covid.Model.LoginForm;
 import com.polytech.covid.Model.Personne;
 import com.polytech.covid.Model.Reservation;
 import com.polytech.covid.Model.ReservationForm;
+import com.polytech.covid.Model.SuperAdmin;
+import com.polytech.covid.Model.User;
 import com.polytech.covid.Model.Ville;
 
 import lombok.RequiredArgsConstructor;
@@ -29,6 +35,12 @@ public class GlobalService {
     private final VilleService villeService;
 
     private final PersonneService personneService;
+
+    private final DoctorService doctorService;
+
+    private final AdminService adminService;
+
+    private final SuperAdminService superAdminService;
 
     public List<Center> centers(){
         return centerService.findAll();
@@ -79,5 +91,41 @@ public class GlobalService {
 
     public Ville findByName(String name){
         return villeService.getVilleByName(name);
+    }
+
+    public User login(LoginForm login) throws NoExistingAccount, IncorrectPassword {
+        User user = null;
+        if(doctorService.findByMail(login.getMail())!=null){
+            user = new Doctor();
+            user = doctorService.findByMail(login.getMail());
+            return user;
+        }else if(adminService.findByMail(login.getMail()) != null){
+            user = new Admin();
+            user = adminService.findByMail(login.getMail());
+            return user;
+        }else if(superAdminService.findByMail(login.getMail())!=null){
+            user = new SuperAdmin();
+            user = superAdminService.findByMail(login.getMail());
+            return user;
+        }else{
+            throw new NoExistingAccount("Aucun compte n'existe avec cette adresse mail");
+        }
+        // else if(compare(login.getPassword(), user.getPassword())){
+        //     throw new IncorrectPassword("Mot de passe incorrect");
+        // }
+    }
+
+    public boolean compare(String s1, String s2){
+        if(s1.length()!= s2.length()){
+            return false;
+        }else{
+            for(int i = 0; i<s1.length(); i++){
+                if(s1.charAt(i) != s2.charAt(i)){
+                    return false;
+                }
+                continue;
+            }
+            return true;
+        }
     }
 }

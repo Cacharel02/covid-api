@@ -13,10 +13,10 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper=true)
 @AllArgsConstructor
 @Entity
-@Table(name = "medecin")
-public class Doctor extends User{
+@Table(name = "superadmin")
+public class SuperAdmin extends User{
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    private static final Role role = Role.DOCTOR;
+    private static final Role role = Role.SUPERADMIN;
 }
